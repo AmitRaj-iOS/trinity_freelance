@@ -5,6 +5,7 @@ import PropertyDetail from "./pages/public/PropertyDetail";
 import Login from "./pages/public/Login";
 import PostProperty from "./pages/public/PostProperty";
 import Wishlist from "./pages/public/Wishlist";
+import BuyerDashboard from "./pages/buyer/BuyerDashboard";
 import AgentDashboard from "./pages/agent/AgentDashboard";
 import AgentListings from "./pages/agent/AgentListings";
 import AgentLeads from "./pages/agent/AgentLeads";
@@ -37,6 +38,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/post-property" element={<PostProperty />} />
       <Route path="/post-property/edit/:id" element={<PostProperty />} />
+      <Route path="/account" element={<BuyerDashboard />} />
       <Route path="/account/wishlist" element={<Wishlist />} />
 
       <Route path="/agent" element={<AgentDashboard />} />

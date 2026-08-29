@@ -6,7 +6,7 @@ export const ROLES = [
     label: "Buyer",
     icon: User,
     iconColor: "text-red-500",
-    dashboard: "/",
+    dashboard: "/account",
     demoName: "Karthik Venkat",
     demoPhone: "9840011223",
     pitchTitle: "Homebuyer Account: View 5 Property Owner Contacts for Free & Unlock Unlimited Pass",

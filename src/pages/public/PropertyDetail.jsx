@@ -1,21 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { MapPin, CheckCircle2, Heart, Share2, Phone, Calendar } from "lucide-react";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import { MapPin, CheckCircle2, Heart, Share2, Phone, Calendar, Lock, Zap } from "lucide-react";
 import PublicLayout from "../../components/layout/PublicLayout";
 import StatusBadge from "../../components/common/StatusBadge";
 import Badge from "../../components/common/Badge";
 import Button from "../../components/common/Button";
 import { useProperties } from "../../context/PropertyContext";
 import { useAuth } from "../../context/AuthContext";
+import { useContactReveal, FREE_REVEAL_LIMIT } from "../../context/ContactRevealContext";
 import { agents, owners } from "../../data/agentData";
 
 export default function PropertyDetail() {
   const { id } = useParams();
   const { getPropertyById, recordVisit } = useProperties();
   const { user } = useAuth();
+  const { isRevealed, remainingFor, reveal } = useContactReveal();
+  const navigate = useNavigate();
+  const location = useLocation();
   const property = getPropertyById(id);
   const [activeImage, setActiveImage] = useState(0);
   const [inquirySent, setInquirySent] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
   const recordedFor = useRef(null);
 
   useEffect(() => {
@@ -39,7 +44,22 @@ export default function PropertyDetail() {
   }
 
   const agent = agents[property.agentId];
-  const owner = owners[property.ownerId] || (property.postedBy && { name: property.postedBy.name });
+  const owner =
+    owners[property.ownerId] ||
+    (property.postedBy && { name: property.postedBy.name, phone: property.postedBy.phone });
+  const contact = agent || owner;
+  const contactPhone = contact?.phone;
+  const revealed = user ? isRevealed(user.id, property.id) : false;
+  const remaining = user ? remainingFor(user.id) : FREE_REVEAL_LIMIT;
+
+  const handleRevealContact = () => {
+    if (!user) {
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+    const ok = reveal(user.id, property.id);
+    if (!ok) setLimitReached(true);
+  };
 
   return (
     <PublicLayout>
@@ -234,6 +254,56 @@ export default function PropertyDetail() {
                     <p className="text-sm font-bold text-navy-900">{owner?.name || "Property Owner"}</p>
                     <p className="text-xs text-slate-400">Self-Listed Owner</p>
                   </div>
+                </div>
+              )}
+
+              {contactPhone && (
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  {revealed ? (
+                    <a
+                      href={`tel:${contactPhone.replace(/\s+/g, "")}`}
+                      className="flex items-center gap-2 rounded-lg bg-mint-50 px-3 py-2.5 text-sm font-bold text-mint-700 hover:bg-mint-100"
+                    >
+                      <Phone className="h-4 w-4" />
+                      {contactPhone}
+                    </a>
+                  ) : limitReached ? (
+                    <div className="rounded-lg bg-amber-500/10 p-3 text-xs text-navy-800">
+                      <p className="flex items-center gap-1.5 font-bold text-amber-700">
+                        <Zap className="h-3.5 w-3.5" />
+                        Free reveals used up
+                      </p>
+                      <p className="mt-1 text-slate-600">
+                        You've viewed {FREE_REVEAL_LIMIT} owner contacts for free. Unlock unlimited
+                        reveals to see this number.
+                      </p>
+                      <Link
+                        to="/unlimited-pass"
+                        className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg bg-navy-900 px-3 py-2 text-xs font-bold text-white hover:bg-navy-800"
+                      >
+                        Unlock Unlimited Pass
+                      </Link>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleRevealContact}
+                      className="flex w-full items-center justify-between rounded-lg border border-dashed border-slate-300 px-3 py-2.5 text-left hover:border-brand-400"
+                    >
+                      <span className="flex items-center gap-2 text-sm font-bold text-navy-800">
+                        <Lock className="h-3.5 w-3.5 text-slate-400" />
+                        •••• •••• ••
+                      </span>
+                      <span className="text-xs font-semibold text-brand-600">Reveal Number</span>
+                    </button>
+                  )}
+                  {!revealed && !limitReached && (
+                    <p className="mt-2 text-center text-[11px] text-slate-400">
+                      {user
+                        ? `${remaining} of ${FREE_REVEAL_LIMIT} free contact reveals left`
+                        : `Sign in to reveal up to ${FREE_REVEAL_LIMIT} owner contacts for free`}
+                    </p>
+                  )}
                 </div>
               )}
             </div>

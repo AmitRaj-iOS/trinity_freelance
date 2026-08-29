@@ -1,11 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { MapPin, ArrowRight, Heart } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import { useWishlist } from "../../context/WishlistContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function PropertyCard({ property }) {
+  const { user } = useAuth();
   const { isWishlisted, toggleWishlist } = useWishlist();
-  const saved = isWishlisted(property.id);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const saved = isWishlisted(user?.id, property.id);
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white card-shadow card-shadow-hover transition-shadow">
@@ -24,7 +28,11 @@ export default function PropertyCard({ property }) {
           aria-label={saved ? "Remove from wishlist" : "Save to wishlist"}
           onClick={(e) => {
             e.preventDefault();
-            toggleWishlist(property.id);
+            if (!user) {
+              navigate("/login", { state: { from: location } });
+              return;
+            }
+            toggleWishlist(user.id, property.id);
           }}
           className={`absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full shadow-sm transition-colors ${
             saved ? "bg-brand-600 text-white hover:bg-brand-700" : "bg-white/90 text-navy-700 hover:bg-white hover:text-brand-600"

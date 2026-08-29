@@ -13,20 +13,30 @@ function loadJSON(key, fallback) {
 }
 
 export function WishlistProvider({ children }) {
-  const [wishlist, setWishlist] = useState(() => loadJSON(STORAGE_KEY, []));
+  const [byUser, setByUser] = useState(() => loadJSON(STORAGE_KEY, {}));
 
-  useEffect(() => localStorage.setItem(STORAGE_KEY, JSON.stringify(wishlist)), [wishlist]);
+  useEffect(() => localStorage.setItem(STORAGE_KEY, JSON.stringify(byUser)), [byUser]);
 
-  const isWishlisted = (id) => wishlist.includes(id);
+  const wishlistFor = (userId) => (userId ? byUser[userId] || [] : []);
 
-  const toggleWishlist = (id) => {
-    setWishlist((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [id, ...prev]));
+  const isWishlisted = (userId, propertyId) => wishlistFor(userId).includes(propertyId);
+
+  const toggleWishlist = (userId, propertyId) => {
+    if (!userId) return;
+    setByUser((prev) => {
+      const list = prev[userId] || [];
+      const next = list.includes(propertyId) ? list.filter((i) => i !== propertyId) : [propertyId, ...list];
+      return { ...prev, [userId]: next };
+    });
   };
 
-  const removeFromWishlist = (id) => setWishlist((prev) => prev.filter((i) => i !== id));
+  const removeFromWishlist = (userId, propertyId) => {
+    if (!userId) return;
+    setByUser((prev) => ({ ...prev, [userId]: (prev[userId] || []).filter((i) => i !== propertyId) }));
+  };
 
   return (
-    <WishlistContext.Provider value={{ wishlist, isWishlisted, toggleWishlist, removeFromWishlist }}>
+    <WishlistContext.Provider value={{ wishlistFor, isWishlisted, toggleWishlist, removeFromWishlist }}>
       {children}
     </WishlistContext.Provider>
   );

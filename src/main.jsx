@@ -9,6 +9,7 @@ import { PropertyProvider } from "./context/PropertyContext.jsx";
 import { UserProvider } from "./context/UserContext.jsx";
 import { FilterDataProvider } from "./context/FilterDataContext.jsx";
 import { WishlistProvider } from "./context/WishlistContext.jsx";
+import { ContactRevealProvider } from "./context/ContactRevealContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -19,7 +20,9 @@ createRoot(document.getElementById("root")).render(
             <UserProvider>
               <FilterDataProvider>
                 <WishlistProvider>
-                  <App />
+                  <ContactRevealProvider>
+                    <App />
+                  </ContactRevealProvider>
                 </WishlistProvider>
               </FilterDataProvider>
             </UserProvider>

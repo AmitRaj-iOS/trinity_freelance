@@ -15,9 +15,11 @@ import {
   Plus,
   LogOut,
   LayoutDashboard,
+  Phone,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useWishlist } from "../../context/WishlistContext";
+import { useContactReveal, FREE_REVEAL_LIMIT } from "../../context/ContactRevealContext";
 import { getRole } from "../../data/roles";
 
 const NAV_LINKS = [
@@ -51,7 +53,10 @@ export default function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const { wishlist } = useWishlist();
+  const { wishlistFor } = useWishlist();
+  const wishlistCount = wishlistFor(user?.id).length;
+  const { remainingFor } = useContactReveal();
+  const remainingContacts = user ? remainingFor(user.id) : FREE_REVEAL_LIMIT;
 
   const initials = user
     ? user.name
@@ -136,9 +141,9 @@ export default function Header() {
             className="relative hidden h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-navy-700 hover:bg-slate-50 sm:flex"
           >
             <Heart className="h-4 w-4" />
-            {wishlist.length > 0 && (
+            {wishlistCount > 0 && (
               <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-600 text-[10px] font-bold text-white">
-                {wishlist.length}
+                {wishlistCount}
               </span>
             )}
           </button>
@@ -160,6 +165,12 @@ export default function Header() {
                   <div className="border-b border-slate-100 px-2 py-2">
                     <p className="text-sm font-bold text-navy-900">{user.name}</p>
                     <p className="text-xs text-slate-400">{user.roleLabel} · +91 {user.phone}</p>
+                    {user.role === "buyer" && (
+                      <p className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-bold text-brand-700">
+                        <Phone className="h-3 w-3" />
+                        {remainingContacts}/{FREE_REVEAL_LIMIT} free contacts left
+                      </p>
+                    )}
                   </div>
                   <button
                     type="button"
@@ -233,9 +244,9 @@ export default function Header() {
                 <Heart className="h-4 w-4" />
                 Wishlist
               </span>
-              {wishlist.length > 0 && (
+              {wishlistCount > 0 && (
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-600 text-[10px] font-bold text-white">
-                  {wishlist.length}
+                  {wishlistCount}
                 </span>
               )}
             </button>
