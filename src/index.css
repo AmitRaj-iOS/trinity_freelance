@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand navy — header, headings, primary dark surfaces */
+  --color-navy-50: #eef0f8;
+  --color-navy-100: #d6dbee;
+  --color-navy-200: #aeb7dd;
+  --color-navy-300: #7d8cc4;
+  --color-navy-400: #4f5da0;
+  --color-navy-500: #2c3775;
+  --color-navy-600: #1c2456;
+  --color-navy-700: #141a41;
+  --color-navy-800: #0d1130;
+  --color-navy-900: #080b22;
+  --color-navy-950: #050716;
+
+  /* Brand accent — pink/magenta CTAs, badges, active states */
+  --color-brand-50: #fdf1f6;
+  --color-brand-100: #fce3ee;
+  --color-brand-200: #f9c1d9;
+  --color-brand-300: #f591b9;
+  --color-brand-400: #ee5793;
+  --color-brand-500: #e11d68;
+  --color-brand-600: #c7134f;
+  --color-brand-700: #a10e40;
+  --color-brand-800: #820f38;
+  --color-brand-900: #6f1032;
+
+  /* Supporting accent — success/ready-to-move, teal-ish */
+  --color-mint-50: #eefaf4;
+  --color-mint-500: #17a673;
+  --color-mint-600: #128a5f;
+
+  --color-amber-500: #f5a524;
+
+  --shadow-card: 0 1px 2px rgba(13, 17, 48, 0.06), 0 4px 16px rgba(13, 17, 48, 0.06);
+  --shadow-card-hover: 0 4px 8px rgba(13, 17, 48, 0.08), 0 12px 32px rgba(13, 17, 48, 0.12);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+  body {
+    @apply bg-slate-50 text-navy-900 antialiased;
+  }
+}
+
+@layer utilities {
+  .card-shadow {
+    box-shadow: var(--shadow-card);
+  }
+  .card-shadow-hover:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+}
